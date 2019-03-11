@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='kubesql',
-    version='0.0.1',
+    version='0.0.2',
     author='xuxinkun',
     author_email='xuxinkun@gmail.com',
     classifiers=[

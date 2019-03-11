@@ -19,7 +19,7 @@ With kubesql, a sql statement can achieve it like this.
 +----------+----------------+
 ```
 
-How many pod are pending
+How many pod are pending.
 
 ```
 [root@localhost kubesql]# kubesql "select count(*) from pods where phase = 'Pending'"
@@ -39,6 +39,8 @@ kubesql has three compoments.
 - kubesql-server: Provide a http api for query. Accepts the sql query , execute the query in sqlite3 and return the query result.
 - kubesql-client: Send the query sql to kubesql-server and get the result, then print the result in table format.
 
+> To increase the throughput of sqlite3, the db file is places at shared memory such as /dev/shm folder. Please make sure the shm is more than 64MB (if your cluster is very large, make it larger). 
+
 ```
 +----------------+  watch   +---------------+     +---------+
 | kube-apiserver | -------> | kubesql-watch | --> | sqlite3 |
@@ -53,24 +55,51 @@ kubesql has three compoments.
 
 # install and deploy 
 
-## manualy install and deploy
+## install and deploy from source code
 
-install
+Install from source code
 
 ```
-//check out the code
+git clone https://github.com/xuxinkun/kubesql.git
+cd kubesql
 pip install requirements.txt
 python setup.py install
 cp -r etc/kubesql /etc
 ```
 
-check the config of `/etc/kubesql/config`, and modify the kubeconfig. kubeconfig is for kubesql-watch to connect to the apiserver.
+Check the config of `/etc/kubesql/config`, and modify the kubeconfig. kubeconfig is for kubesql-watch to connect to the apiserver.
 
 ```
 nohup kubesql-watch &
 nohup kubesql-server &
 ```
 
+## docker
+
+Deploy the kubesql with docker image.
+
+Ensure the kubeconfig is placed at `/etc/kubernetes/kubeconfig`.
+
+```
+docker pull kubesql
+docker run -it -d --name kubesql-watch -v /dev/shm:/dev/shm -v /etc/kubernetes/kubeconfig:/etc/kubeconfig kubesql kubesql-watch
+docker run -it -d --name kubesql-server -v /dev/shm:/dev/shm -v /etc/kubernetes/kubeconfig:/etc/kubeconfig kubesql kubesql-server
+```
+
+Execute the sql query.
+
+```
+docker run -it --rm --name kubesql --net=container:kubesql-server kubesql kubesql -h
+docker run -it --rm --name kubesql --net=container:kubesql-server kubesql kubesql -a
+docker run -it --rm --name kubesql --net=container:kubesql-server kubesql kubesql "select * from pods"
+```
+
+Also, you can execute the query in the container.
+
+```
+[root@localhost kubesql]# docker run -it --rm --name kubesql --net=container:kubesql-server kubesql bash
+[root@d58bbb8c7aa8 kubesql]# kubesql -h
+```
 
 # Usage
 
