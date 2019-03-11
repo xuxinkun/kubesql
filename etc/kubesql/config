@@ -1,0 +1,6 @@
+[kubesql]
+port=415
+ip=127.0.0.1
+db_path=/dev/shm/kubesql.db
+param_path=/etc/kubesql/params
+kubeconfig_path=/etc/kubeconfig

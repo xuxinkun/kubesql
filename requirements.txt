@@ -1,0 +1,4 @@
+kubernetes==8.0.1
+bottle==0.12.16
+prettytable==0.7.2
+eventlet==0.24.1

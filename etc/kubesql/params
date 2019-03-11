@@ -1,0 +1,32 @@
+---
+pod
+metadata.name
+metadata.uid
+metadata.namespace
+metadata.creationTimestamp
+metadata.deletionTimestamp
+spec.nodeName
+spec.schedulerName
+status.hostIP
+status.phase
+status.podIP
+status.reason
+status.startTime
+---
+node
+metadata.name
+metadata.uid
+metadata.creationTimestamp
+metadata.deletionTimestamp
+status.allocatable.cpu allocatable_cpu
+status.allocatable.memory allocatable_memory
+status.allocatable.pods allocatable_pods
+status.capacity.cpu capacity_cpu
+status.capacity.memory capacity_memory
+status.capacity.pods capacity_pods
+status.nodeInfo.architecture
+status.nodeInfo.containerRuntimeVersion
+status.nodeInfo.kubeProxyVersion
+status.nodeInfo.kubeletVersion
+status.nodeInfo.operatingSystem
+status.nodeInfo.osImage
