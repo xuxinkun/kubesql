@@ -19,7 +19,7 @@ With kubesql, a sql statement can achieve it like this.
 +----------+----------------+
 ```
 
-How many pod are pending.
+How many pods are pending.
 
 ```
 [root@localhost kubesql]# kubesql "select count(*) from pods where phase = 'Pending'"
@@ -81,24 +81,30 @@ Deploy the kubesql with docker image.
 Ensure the kubeconfig is placed at `/etc/kubernetes/kubeconfig`.
 
 ```
-docker pull kubesql
-docker run -it -d --name kubesql-watch -v /dev/shm:/dev/shm -v /etc/kubernetes/kubeconfig:/etc/kubeconfig kubesql kubesql-watch
-docker run -it -d --name kubesql-server -v /dev/shm:/dev/shm -v /etc/kubernetes/kubeconfig:/etc/kubeconfig kubesql kubesql-server
+docker pull xuxinkun/kubesql
+docker run -it -d --name kubesql-watch -v /dev/shm:/dev/shm -v /etc/kubernetes/kubeconfig:/etc/kubeconfig xuxinkun/kubesql kubesql-watch
+docker run -it -d --name kubesql-server -v /dev/shm:/dev/shm -v /etc/kubernetes/kubeconfig:/etc/kubeconfig xuxinkun/kubesql kubesql-server
 ```
 
 Execute the sql query.
 
 ```
-docker run -it --rm --name kubesql --net=container:kubesql-server kubesql kubesql -h
-docker run -it --rm --name kubesql --net=container:kubesql-server kubesql kubesql -a
-docker run -it --rm --name kubesql --net=container:kubesql-server kubesql kubesql "select * from pods"
+docker run -it --rm --name kubesql --net=container:kubesql-server xuxinkun/kubesql kubesql -h
+docker run -it --rm --name kubesql --net=container:kubesql-server xuxinkun/kubesql kubesql -a
+docker run -it --rm --name kubesql --net=container:kubesql-server xuxinkun/kubesql kubesql "select * from pods"
 ```
 
 Also, you can execute the query in the container.
 
 ```
-[root@localhost kubesql]# docker run -it --rm --name kubesql --net=container:kubesql-server kubesql bash
+[root@localhost kubesql]# docker run -it --rm --name kubesql --net=container:kubesql-server xuxinkun/kubesql bash
 [root@d58bbb8c7aa8 kubesql]# kubesql -h
+```
+
+Clean the contaienrs.
+
+```
+docker rm -f kubesql-watch kubesql-server
 ```
 
 # Usage
