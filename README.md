@@ -2,7 +2,7 @@
 
 kubesql is a tool to use sql to query the resources of kubernetes.
 
-The resources of kubernetes such as nodes, pods and so on are handled as the 
+The resources of kubernetes such as nodes, pods and so on are handled as tables.
 
 For example, all pods are easily to list from apiserver. But the number of pods on each node is not easy to caculate. 
 
@@ -148,7 +148,6 @@ And `kubesql -t {table_name}` can list the columns for `table_name` currently su
 | uid                     | 1   | None       | 0       | 0  | char(200) |
 | creationTimestamp       | 2   | None       | 0       | 0  | datetime  |
 | deletionTimestamp       | 3   | None       | 0       | 0  | datetime  |
-| zone                    | 4   | None       | 0       | 0  | char(200) |
 | allocatable_cpu         | 5   | None       | 0       | 0  | char(200) |
 | allocatable_memory      | 6   | None       | 0       | 0  | char(200) |
 | allocatable_pods        | 7   | None       | 0       | 0  | char(200) |
@@ -163,3 +162,11 @@ And `kubesql -t {table_name}` can list the columns for `table_name` currently su
 | osImage                 | 16  | None       | 0       | 0  | char(200) |
 +-------------------------+-----+------------+---------+----+-----------+
 ```
+
+# TODO
+
+- Added support for list, can support support for `container` field in pod
+- Improve error handling
+- Improve watch performance and reduce stress on sqlite3
+- Add custom handlers to handle memory equivalents from string to numeric values
+- Add more resources support, such as rs, configmap, deployment, etc.
