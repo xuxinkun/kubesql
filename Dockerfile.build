@@ -1,0 +1,7 @@
+FROM centos:7
+RUN yum install -y java-1.8.0-openjdk wget curl
+RUN yum install -y maven
+WORKDIR /home/kubesql
+COPY pom.xml .
+RUN mvn clean && mvn package
+CMD mvn clean && mvn package
