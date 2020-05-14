@@ -2,13 +2,13 @@ package io.kubesql.presto.kube.table;
 
 import com.facebook.airlift.log.Logger;
 import io.kubernetes.client.custom.Quantity;
-import io.kubernetes.client.models.V1Node;
+import io.kubernetes.client.openapi.models.V1Node;
 
 import java.util.*;
 
 import com.facebook.presto.spi.type.*;
 import com.facebook.presto.spi.type.VarcharType;
-import io.kubernetes.client.models.V1NodeCondition;
+import io.kubernetes.client.openapi.models.V1NodeCondition;
 import io.kubesql.presto.kube.*;
 
 

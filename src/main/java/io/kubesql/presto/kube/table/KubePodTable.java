@@ -3,7 +3,7 @@ package io.kubesql.presto.kube.table;
 import com.facebook.airlift.log.Logger;
 import com.facebook.presto.spi.SchemaTableName;
 import com.facebook.presto.spi.type.*;
-import io.kubernetes.client.models.*;
+import io.kubernetes.client.openapi.models.*;
 import io.kubesql.presto.kube.KubeColumn;
 import io.kubesql.presto.kube.KubeTables;
 
@@ -98,19 +98,19 @@ public class KubePodTable extends KubeResTable {
             put(Podhostnetwork, new KubeColumn<V1Pod>(Podhostnetwork, BooleanType.BOOLEAN) {
                 @Override
                 public Object getData(V1Pod v1Pod) {
-                    return v1Pod.getSpec().isHostNetwork();
+                    return v1Pod.getSpec().getHostNetwork();
                 }
             });
             put(Podhostpid, new KubeColumn<V1Pod>(Podhostpid, BooleanType.BOOLEAN) {
                 @Override
                 public Object getData(V1Pod v1Pod) {
-                    return v1Pod.getSpec().isHostPID();
+                    return v1Pod.getSpec().getHostPID();
                 }
             });
             put(Podhostipc, new KubeColumn<V1Pod>(Podhostipc, BooleanType.BOOLEAN) {
                 @Override
                 public Object getData(V1Pod v1Pod) {
-                    return v1Pod.getSpec().isHostIPC();
+                    return v1Pod.getSpec().getHostIPC();
                 }
             });
             put(PodrestartPolicy, new KubeColumn<V1Pod>(PodrestartPolicy, VarcharType.createUnboundedVarcharType()) {
@@ -208,6 +208,7 @@ public class KubePodTable extends KubeResTable {
 
     public void updateCache(V1Pod pod) {
         Map<String, Object> podData = kubeAPIToData(pod);
+        log.debug("update pod cache %s", pod.getMetadata().getName());
         getCache().put(pod.getMetadata().getUid(), podData);
         for (V1Container container : pod.getSpec().getContainers()) {
             V1ContainerStatus containerStatus = getContainerStatusByName(pod.getStatus().getContainerStatuses(), container.getName());
@@ -216,6 +217,7 @@ public class KubePodTable extends KubeResTable {
     }
 
     public void removeCache(V1Pod pod) {
+        log.debug("remove pod cache %s", pod.getMetadata().getName());
         getCache().remove(pod.getMetadata().getUid());
         for (V1Container container : pod.getSpec().getContainers()) {
             kubeContainerTable.removeCache(pod.getMetadata().getUid(), container);

@@ -20,3 +20,6 @@ build:
 
 deploy:
 	docker run -it -d --name kubesql -v /root/.kube/config:/home/presto/config $(KUBESQL_DOCKERHUB_IMAGE)
+
+undeploy:
+	docker rm -f kubesql

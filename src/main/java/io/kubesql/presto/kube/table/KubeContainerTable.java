@@ -3,7 +3,7 @@ package io.kubesql.presto.kube.table;
 import com.facebook.airlift.log.Logger;
 import com.facebook.presto.spi.type.*;
 import io.kubernetes.client.custom.Quantity;
-import io.kubernetes.client.models.*;
+import io.kubernetes.client.openapi.models.*;
 import io.kubesql.presto.kube.KubeColumn;
 import io.kubesql.presto.kube.KubeTables;
 
@@ -106,26 +106,26 @@ public class KubeContainerTable extends KubeResTable {
             put(Containertty, new KubeColumn<V1Container>(Containertty, BooleanType.BOOLEAN, ColumnContainer) {
                 @Override
                 public Object getData(V1Container v1Container) {
-                    return v1Container.isTty();
+                    return v1Container.getTty();
                 }
             });
             put(Containerstdin, new KubeColumn<V1Container>(Containerstdin, BooleanType.BOOLEAN, ColumnContainer) {
                 @Override
                 public Object getData(V1Container v1Container) {
-                    return v1Container.isStdin();
+                    return v1Container.getStdin();
                 }
             });
             put(Containerstdinonce, new KubeColumn<V1Container>(Containerstdinonce, BooleanType.BOOLEAN, ColumnContainer) {
                 @Override
                 public Object getData(V1Container v1Container) {
-                    return v1Container.isStdinOnce();
+                    return v1Container.getStdinOnce();
                 }
             });
             put(Containerprivileged, new KubeColumn<V1Container>(Containerprivileged, BooleanType.BOOLEAN, ColumnContainer) {
                 @Override
                 public Object getData(V1Container v1Container) {
                     if (v1Container.getSecurityContext() != null) {
-                        return v1Container.getSecurityContext().isPrivileged();
+                        return v1Container.getSecurityContext().getPrivileged();
                     }
                     return false;
                 }
@@ -183,7 +183,7 @@ public class KubeContainerTable extends KubeResTable {
             put(ContainerStautReady, new KubeColumn<V1ContainerStatus>(ContainerStautReady, BooleanType.BOOLEAN, ColumnContainerStatus) {
                 @Override
                 public Object getData(V1ContainerStatus containerStatus) {
-                    return containerStatus.isReady();
+                    return containerStatus.getReady();
                 }
             });
             put(ContainerStatusRestartCount, new KubeColumn<V1ContainerStatus>(ContainerStatusRestartCount, IntegerType.INTEGER, ColumnContainerStatus) {
@@ -209,11 +209,13 @@ public class KubeContainerTable extends KubeResTable {
     }
 
     public void updateCache(String uid, V1Container v1Container, V1ContainerStatus containerStatus) {
+        log.debug("update container cache %s/%s", uid, v1Container.getName());
         Map<String, Object> containerData = kubeAPIToData(uid, v1Container, containerStatus);
         getCache().put(uid + v1Container.getName(), containerData);
     }
 
     public void removeCache(String uid, V1Container v1Container) {
+        log.debug("remove container cache %s/%s", uid, v1Container.getName());
         getCache().remove(uid + v1Container.getName());
     }
 

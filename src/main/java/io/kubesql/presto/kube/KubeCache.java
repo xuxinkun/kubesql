@@ -2,15 +2,15 @@ package io.kubesql.presto.kube;
 
 import com.facebook.airlift.log.Logger;
 import com.facebook.presto.spi.SchemaTableName;
-import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.ApiException;
-import io.kubernetes.client.Configuration;
-import io.kubernetes.client.apis.CoreV1Api;
+import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.informer.*;
-import io.kubernetes.client.models.V1Node;
-import io.kubernetes.client.models.V1NodeList;
-import io.kubernetes.client.models.V1Pod;
-import io.kubernetes.client.models.V1PodList;
+import io.kubernetes.client.openapi.models.V1Node;
+import io.kubernetes.client.openapi.models.V1NodeList;
+import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.util.CallGeneratorParams;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.KubeConfig;
@@ -21,7 +21,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class KubeCache {
     private static final Logger log = Logger.get(KubeCache.class);
@@ -49,7 +48,6 @@ public class KubeCache {
                 log.info("read kube config file. %s", kubeConfigPath);
                 client = ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
             }
-            client.getHttpClient().setReadTimeout(0, TimeUnit.MILLISECONDS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,26 +59,21 @@ public class KubeCache {
 
         // Node informer
         nodeInformer = factory.sharedIndexInformerFor(
-                (CallGeneratorParams params) -> {
-                    try {
-                        return coreV1Api.listNodeCall(
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                params.resourceVersion,
-                                params.timeoutSeconds,
-                                params.watch,
-                                null,
-                                null);
-                    } catch (ApiException e) {
-                        throw new RuntimeException(e);
-                    }
-                },
-                V1Node.class,
-                V1NodeList.class);
+                        (CallGeneratorParams params) -> {
+                            return coreV1Api.listNodeCall(
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    params.resourceVersion,
+                                    params.timeoutSeconds,
+                                    params.watch,
+                                    null);
+                        },
+                        V1Node.class,
+                        V1NodeList.class);
 
         kubeNodeTable = new KubeNodeTable(kubeTables);
 
@@ -88,22 +81,23 @@ public class KubeCache {
                 new ResourceEventHandler<V1Node>() {
                     @Override
                     public void onAdd(V1Node node) {
+                        log.info("Receive node add event from %s", node.getMetadata().getName());
                         kubeNodeTable.updateCache(node);
-                        System.out.printf("%s node added!\n", node.getMetadata().getName());
+                        log.info("Handle node add event from %s", node.getMetadata().getName());
                     }
 
                     @Override
                     public void onUpdate(V1Node oldNode, V1Node newNode) {
+                        log.info("Receive node update event from %s", newNode.getMetadata().getName());
                         kubeNodeTable.updateCache(newNode);
-                        System.out.printf(
-                                "%s => %s node updated!\n",
-                                oldNode.getMetadata().getName(), newNode.getMetadata().getName());
+                        log.info("Handle node update event from %s", newNode.getMetadata().getName());
                     }
 
                     @Override
                     public void onDelete(V1Node node, boolean deletedFinalStateUnknown) {
+                        log.info("Receive node delete event from %s", node.getMetadata().getName());
                         kubeNodeTable.removeCache(node);
-                        System.out.printf("%s node deleted!\n", node.getMetadata().getName());
+                        log.info("Handle node delete event from %s", node.getMetadata().getName());
                     }
                 });
 
@@ -122,7 +116,6 @@ public class KubeCache {
                                 params.resourceVersion,
                                 params.timeoutSeconds,
                                 params.watch,
-                                null,
                                 null);
                     } catch (ApiException e) {
                         throw new RuntimeException(e);
@@ -137,27 +130,27 @@ public class KubeCache {
                 new ResourceEventHandler<V1Pod>() {
                     @Override
                     public void onAdd(V1Pod pod) {
+                        log.info("Receive pod add event from %s", pod.getMetadata().getName());
                         kubePodTable.updateCache(pod);
-                        System.out.printf("%s pod added!\n", pod.getMetadata().getName());
+                        log.info("Handle pod add event from %s", pod.getMetadata().getName());
                     }
 
                     @Override
                     public void onUpdate(V1Pod oldpod, V1Pod newpod) {
+                        log.info("Receive pod update event from %s", newpod.getMetadata().getName());
                         kubePodTable.updateCache(newpod);
-                        System.out.printf(
-                                "%s => %s pod updated!\n",
-                                oldpod.getMetadata().getName(), newpod.getMetadata().getName());
+                        log.info("Handle pod update event from %s", newpod.getMetadata().getName());
                     }
 
                     @Override
                     public void onDelete(V1Pod pod, boolean deletedFinalStateUnknown) {
+                        log.info("Receive pod delete event from %s", pod.getMetadata().getName());
                         kubePodTable.removeCache(pod);
-                        System.out.printf("%s pod deleted!\n", pod.getMetadata().getName());
+                        log.info("Handle pod delete event from %s", pod.getMetadata().getName());
                     }
                 });
 
         factory.startAllRegisteredInformers();
-
         kubeNodeTable.registerTableCache(kubeResourceCache);
         kubePodTable.registerTableCache(kubeResourceCache);
 

@@ -7,7 +7,7 @@ import com.facebook.presto.spi.type.BigintType;
 import com.facebook.presto.spi.type.DoubleType;
 import com.facebook.presto.spi.type.VarcharType;
 import io.kubernetes.client.custom.Quantity;
-import io.kubernetes.client.models.V1Node;
+import io.kubernetes.client.openapi.models.V1Node;
 import io.kubesql.presto.kube.KubeColumn;
 import io.kubesql.presto.kube.KubeTableHandle;
 import io.kubesql.presto.kube.KubeTables;
