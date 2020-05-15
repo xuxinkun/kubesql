@@ -81,23 +81,23 @@ public class KubeCache {
                 new ResourceEventHandler<V1Node>() {
                     @Override
                     public void onAdd(V1Node node) {
-                        log.info("Receive node add event from %s", node.getMetadata().getName());
+                        log.debug("Receive node add event from %s", node.getMetadata().getName());
                         kubeNodeTable.updateCache(node);
-                        log.info("Handle node add event from %s", node.getMetadata().getName());
+                        log.debug("Handle node add event from %s", node.getMetadata().getName());
                     }
 
                     @Override
                     public void onUpdate(V1Node oldNode, V1Node newNode) {
-                        log.info("Receive node update event from %s", newNode.getMetadata().getName());
+                        log.debug("Receive node update event from %s", newNode.getMetadata().getName());
                         kubeNodeTable.updateCache(newNode);
-                        log.info("Handle node update event from %s", newNode.getMetadata().getName());
+                        log.debug("Handle node update event from %s", newNode.getMetadata().getName());
                     }
 
                     @Override
                     public void onDelete(V1Node node, boolean deletedFinalStateUnknown) {
-                        log.info("Receive node delete event from %s", node.getMetadata().getName());
+                        log.debug("Receive node delete event from %s", node.getMetadata().getName());
                         kubeNodeTable.removeCache(node);
-                        log.info("Handle node delete event from %s", node.getMetadata().getName());
+                        log.debug("Handle node delete event from %s", node.getMetadata().getName());
                     }
                 });
 
@@ -130,23 +130,23 @@ public class KubeCache {
                 new ResourceEventHandler<V1Pod>() {
                     @Override
                     public void onAdd(V1Pod pod) {
-                        log.info("Receive pod add event from %s", pod.getMetadata().getName());
+                        log.debug("Receive pod add event from %s", pod.getMetadata().getName());
                         kubePodTable.updateCache(pod);
-                        log.info("Handle pod add event from %s", pod.getMetadata().getName());
+                        log.debug("Handle pod add event from %s", pod.getMetadata().getName());
                     }
 
                     @Override
                     public void onUpdate(V1Pod oldpod, V1Pod newpod) {
-                        log.info("Receive pod update event from %s", newpod.getMetadata().getName());
+                        log.debug("Receive pod update event from %s", newpod.getMetadata().getName());
                         kubePodTable.updateCache(newpod);
-                        log.info("Handle pod update event from %s", newpod.getMetadata().getName());
+                        log.debug("Handle pod update event from %s", newpod.getMetadata().getName());
                     }
 
                     @Override
                     public void onDelete(V1Pod pod, boolean deletedFinalStateUnknown) {
-                        log.info("Receive pod delete event from %s", pod.getMetadata().getName());
+                        log.debug("Receive pod delete event from %s", pod.getMetadata().getName());
                         kubePodTable.removeCache(pod);
-                        log.info("Handle pod delete event from %s", pod.getMetadata().getName());
+                        log.debug("Handle pod delete event from %s", pod.getMetadata().getName());
                     }
                 });
 

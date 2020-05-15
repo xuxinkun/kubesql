@@ -76,7 +76,7 @@ public class KubeTables
     public List<ColumnMetadata> getColumns(KubeTableHandle tableHandle)
     {
         checkArgument(tableColumns.containsKey(tableHandle.getSchemaTableName()), "Table %s not registered", tableHandle.getSchemaTableName());
-        log.info(tableColumns.get(tableHandle.getSchemaTableName()).toString());
+        log.debug("get columns %s", tableColumns.get(tableHandle.getSchemaTableName()).toString());
         return tableColumns.get(tableHandle.getSchemaTableName());
     }
 }

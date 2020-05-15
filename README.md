@@ -32,7 +32,14 @@ And presto read cursor from the cache.
 In case the kubeconfig file is located at `/root/.kube/config`. Just run and enjoy.
 
 ```
-[root@localhost kubesql]# docker run -it -d --name kubesql -v /root/.kube/config:/home/presto/config xuxinkub/kubesql:latest
+docker run -it -d --name kubesql -v /root/.kube/config:/home/presto/config xuxinkun/kubesql:latest
+docker exec -it kubesql presto --server localhost:8080 --catalog kubesql --schema kubesql
+```
+
+## example
+
+```
+[root@localhost kubesql]# docker run -it -d --name kubesql -v /root/.kube/config:/home/presto/config xuxinkun/kubesql:latest
 [root@localhost kubesql]# docker exec -it kubesql presto --server localhost:8080 --catalog kubesql --schema kubesql
 presto:kubesql> show tables;
    Table    
