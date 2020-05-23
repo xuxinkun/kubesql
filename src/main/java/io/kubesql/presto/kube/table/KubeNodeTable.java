@@ -28,6 +28,7 @@ public class KubeNodeTable extends KubeResTable {
     public static String NodeLabelsPrefix = "labels.";
     public static String NodeCreationTimestamp = "creationtimestamp";
     public static String NodeDeletionTimestamp = "deletiontimstamp";
+    public static String Nodeunschedulable = "unschedulable";
     //    public static String NodeAddressesPrexif = "addresses";
     public static String NodeAllocatablePrefix = "allocatable.";
     public static String NodeCapacityPrefix = "capacity.";
@@ -80,6 +81,12 @@ public class KubeNodeTable extends KubeResTable {
                 @Override
                 public Object getData(V1Node v1Node) {
                     return v1Node.getStatus().getDaemonEndpoints().getKubeletEndpoint().getPort();
+                }
+            });
+            put(Nodeunschedulable, new KubeColumn<V1Node>(Nodeunschedulable, BooleanType.BOOLEAN) {
+                @Override
+                public Object getData(V1Node v1Node) {
+                    return v1Node.getSpec().getUnschedulable();
                 }
             });
             put(NodeArchitecture, new KubeColumn<V1Node>(NodeArchitecture, VarcharType.createUnboundedVarcharType()) {
