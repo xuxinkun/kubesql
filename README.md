@@ -42,9 +42,9 @@ There are three main modules in kubesql:
 ![kubesql-arc](https://xuxinkun.github.io/img/kubesql/kubesql.png)
 
 
--kubesql-watcher: monitor k8s api pod and node changes. And convert the structured data of pod and node into relational data.
--kubecache: used to cache pod and node data.
--kubesql-connector: as presto connector, accept calls from presto, query column information and corresponding data through kubecache, and return to presto about column and data information.
+- kubesql-watcher: monitor k8s api pod and node changes. And convert the structured data of pod and node into relational data.
+- kubecache: used to cache pod and node data.
+- kubesql-connector: as presto connector, accept calls from presto, query column information and corresponding data through kubecache, and return to presto about column and data information.
 
 Since all data is cached in memory, there is almost no disk requirement. But it also needs to provide larger memory according to the size of the cluster.
 
@@ -117,6 +117,10 @@ Since containerStatus corresponds one-to-one with containers, ContainerStatus ar
 
 ## example
 
+Show tables.
+
+> descibe {table name} is also supported.
+
 ```
 [root@localhost kubesql]# docker exec -it kubesql presto --server localhost:8080 --catalog kubesql --schema kubesql
 presto:kubesql> show tables;
@@ -129,7 +133,7 @@ presto:kubesql> show tables;
 ```
 
 
-For example, to query the CPU resources of each pod (requests and limits).
+Query the CPU resources of each pod (requests and limits).
 
 
 ```
@@ -140,7 +144,7 @@ presto:kubesql> select pods.namespace,pods.name,sum("requests.cpu") as "requests
  lll-nopassword-18 | lll-nopassword-18-202005211645264618 |          0.1 |        1.0 
 ```
 
-Another example is to query the remaining CPUs on each node.
+Query the remaining CPUs on each node.
 
 ```
 presto:kubesql> select nodes.name, nodes."allocatable.cpu" - podnodecpu."requests.cpu" from nodes, (select pods.nodename,sum("requests.cpu") as "requests.cpu" from pods,containers where pods.uid = containers.uid group by pods.nodename) as podnodecpu where nodes.name = podnodecpu.nodename;
@@ -153,7 +157,7 @@ presto:kubesql> select nodes.name, nodes."allocatable.cpu" - podnodecpu."request
  10.11.12.33 | 43.022999999999996 
 ```
 
-Another example is to query all pods created after 2020-05-12.
+Query all pods created after 2020-05-12.
 
 ```
 presto:kube> select name, namespace,creationTimestamp from pods where creationTimestamp > date('2020-05-12') order by creationTimestamp desc;
